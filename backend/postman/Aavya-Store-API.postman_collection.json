@@ -1,0 +1,91 @@
+{
+  "info": {
+    "name": "Aavya Store API",
+    "description": "REST examples for the Aavya Studio Express and Supabase backend.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    { "key": "baseUrl", "value": "http://localhost:5000/api" },
+    { "key": "adminToken", "value": "" },
+    { "key": "productId", "value": "" },
+    { "key": "categoryId", "value": "" },
+    { "key": "orderId", "value": "" }
+  ],
+  "item": [
+    {
+      "name": "Health",
+      "request": { "method": "GET", "url": "{{baseUrl}}/health" }
+    },
+    {
+      "name": "Public store",
+      "item": [
+        { "name": "List products", "request": { "method": "GET", "url": "{{baseUrl}}/products?page=1&limit=24&sort=featured" } },
+        { "name": "Product details", "request": { "method": "GET", "url": "{{baseUrl}}/products/{{productId}}" } },
+        { "name": "Categories", "request": { "method": "GET", "url": "{{baseUrl}}/categories" } },
+        { "name": "Store settings", "request": { "method": "GET", "url": "{{baseUrl}}/settings" } },
+        {
+          "name": "Place guest order",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"customer\": {\n    \"name\": \"Asha Example\",\n    \"phone\": \"9876543210\",\n    \"email\": \"\",\n    \"address\": \"12 Example Road\",\n    \"city\": \"Jaipur\",\n    \"state\": \"Rajasthan\",\n    \"pincode\": \"302001\",\n    \"notes\": \"\"\n  },\n  \"items\": [\n    {\n      \"product\": { \"id\": \"{{productId}}\" },\n      \"size\": \"M\",\n      \"color\": \"Rose\",\n      \"quantity\": 1\n    }\n  ],\n  \"paymentMethod\": \"gpay\"\n}"
+            },
+            "url": "{{baseUrl}}/orders"
+          }
+        },
+        { "name": "Track order", "request": { "method": "GET", "url": "{{baseUrl}}/orders/track?orderId={{orderId}}&phone=9876543210" } }
+      ]
+    },
+    {
+      "name": "Admin",
+      "item": [
+        {
+          "name": "Admin login",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"email\": \"admin@example.com\",\n  \"password\": \"replace-with-admin-password\"\n}" },
+            "url": "{{baseUrl}}/auth/admin/login"
+          }
+        },
+        {
+          "name": "Admin orders",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{adminToken}}" }],
+            "url": "{{baseUrl}}/admin/orders?page=1&limit=25"
+          }
+        },
+        {
+          "name": "Verify payment manually",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{adminToken}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": { "mode": "raw", "raw": "{\n  \"paymentStatus\": \"Verified\"\n}" },
+            "url": "{{baseUrl}}/admin/orders/{{orderId}}/payment"
+          }
+        },
+        {
+          "name": "Upload product images",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Authorization", "value": "Bearer {{adminToken}}" }],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                { "key": "type", "value": "products", "type": "text" },
+                { "key": "files", "type": "file", "src": "" }
+              ]
+            },
+            "url": "{{baseUrl}}/admin/uploads"
+          }
+        }
+      ]
+    }
+  ]
+}
